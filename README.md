@@ -19,6 +19,7 @@ Este proyecto levanta un servicio Python que consume mensajes MQTT y los guarda 
   MQTT_TOPIC=sensors/+/temperature
   CA_CERT_PATH=/certs/ca.crt
   ```
+  **Nota**: El fichero `certs/ca.crt` debe contener el certificado de la CA que firma tu broker MQTT. No se incluye en el repositorio; descárgalo de tu proveedor o administrador y colócalo en la carpeta `certs/` en la raíz del proyecto.
 
 ---
 
