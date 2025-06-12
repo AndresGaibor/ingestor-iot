@@ -57,7 +57,7 @@ docker run --rm -it \
 
 ## Usar con Docker Compose
 
-1. Crea un archivo `docker-compose.yml` en la raíz:
+1. Crea (o edita) un archivo `docker-compose.yml` en la raíz:
 
    ```yaml
    version: '3.8'
@@ -69,16 +69,11 @@ docker run --rm -it \
        image: ingestor-iot:latest
        env_file:
          - .env
+       # Montamos el certificado desde fuera
+       volumes:
+         - ./certs:/certs:ro
        ports:
          - "5000:5000"
-   ```
-
-2. Ejecuta:
-   ```fish
-   docker-compose up --build
-   ```
-
----
 
 ## Limpieza
 
