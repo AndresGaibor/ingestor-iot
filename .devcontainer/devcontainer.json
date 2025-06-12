@@ -1,0 +1,20 @@
+{
+  "name": "Python 3.11 Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    // Contexto: la raíz del proyecto
+    "context": ".."
+  },
+  "forwardPorts": [5000],
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "runArgs": [ "--network=host", "--env-file", "${localWorkspaceFolder}/.env" ],
+  "customizations": {
+	"vscode": {
+		"settings": {
+			"python.pythonPath": "/usr/local/bin/python"
+		},
+		"extensions": ["ms-python.python"]
+	}
+  }
+}
