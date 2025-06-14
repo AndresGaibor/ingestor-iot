@@ -7,9 +7,7 @@ services:
       - "1883:1883"    # puerto MQTT “sin TLS”
       - "9001:9001"    # websocket opcional
     volumes:
-      - ./data/mosquitto/config:/mosquitto/config:ro
       - ./data/mosquitto/data:/mosquitto/data
-      - ./data/mosquitto/log:/mosquitto/log
     networks:
       - backend
   ingestor-iot:
