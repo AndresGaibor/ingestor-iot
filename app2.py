@@ -33,7 +33,7 @@ def on_msg(c,u,m):
 	client.on_message = on_msg
 	client.connect(
       os.getenv("MQTT_BROKER"),
-      int(os.getenv("MQTT_PORT"))
+      int(os.getenv("MQTT_PORT") or 5000),
     )
 	client.subscribe(os.getenv("MQTT_TOPIC"))
 	client.loop_forever()
