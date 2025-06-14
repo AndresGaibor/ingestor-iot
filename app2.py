@@ -64,10 +64,11 @@ client = mqtt.Client()
 # client.tls_set(ca_certs="/certs/ca.crt")
 client.on_message = on_message
 
-broker = os.getenv("MQTT_BROKER")
-port   = int(os.getenv("MQTT_PORT", 5000))
-topic  = os.getenv("MQTT_TOPIC")
+broker = os.getenv("MQTT_BROKER", "mqtt-broker")
+port   = int(os.getenv("MQTT_PORT", 1883))
+topic  = os.getenv("MQTT_TOPIC", "sensors/temperature")
 
+print(f"Conectando a {broker}:{port} → {topic}")
 client.connect(broker, port)
 client.subscribe(topic)
 
