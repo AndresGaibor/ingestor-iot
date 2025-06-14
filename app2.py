@@ -61,7 +61,7 @@ def on_message(client, userdata, msg):
 
 # 5) Configurar y arrancar cliente MQTT
 client = mqtt.Client()
-client.tls_set(ca_certs="/certs/ca.crt")
+# client.tls_set(ca_certs="/certs/ca.crt")
 client.on_message = on_message
 
 broker = os.getenv("MQTT_BROKER")
