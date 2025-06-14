@@ -1,5 +1,6 @@
 services:
   ingestor-iot:
+    container_name: ingestor-iot
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
