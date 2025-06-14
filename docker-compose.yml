@@ -14,7 +14,8 @@ services:
     networks:
       - backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   # Tu servicio de Grafana, con variables para conectarse a la BD
   grafana:
     image: grafana/grafana-enterprise
@@ -27,13 +28,19 @@ services:
     networks:
       - backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   # Tu servicio de Base de Datos
   db:
     image: timescale/timescaledb-ha:pg17
     container_name: timescaledb
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
     environment:
