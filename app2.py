@@ -1,49 +1,75 @@
 import os
+import time
 from dotenv import load_dotenv
 
-load_dotenv()  # carga variables desde .env
+import psycopg2
+import paho.mqtt.client as mqtt
 
-import json, ssl, psycopg2, paho.mqtt.client as mqtt
+# Carga variables de entorno desde .env
+load_dotenv()
+
+# Parámetros de conexión a PostgreSQL
 params = {
-    "host": os.getenv("DB_HOST", "db"),
-    "dbname": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
+    "host":     os.getenv("DB_HOST", "db"),
+    "dbname":   os.getenv("DB_NAME"),
+    "user":     os.getenv("DB_USER"),
     "password": os.getenv("DB_PASS"),
 }
 
+# 1) Esperar a que la base de datos esté lista
 while True:
     try:
         DB = psycopg2.connect(**params)
+        print("✅ Conectado a PostgreSQL")
         break
     except psycopg2.OperationalError:
-        print("→ DB no lista. Reintentando en 2s...")
+        print("→ DB no lista. Reintentando en 2s…")
         time.sleep(2)
 
 cur = DB.cursor()
 
-cur.execute("""CREATE EXTENSION IF NOT EXISTS timescaledb;""")
+# 2) Crear extensión y tabla si no existen
+cur.execute("CREATE EXTENSION IF NOT EXISTS timescaledb;")
 cur.execute("""
-CREATE TABLE IF NOT EXISTS measurements(
-time TIMESTAMPTZ DEFAULT now(),
-topic TEXT, value DOUBLE PRECISION);
-"""); DB.commit()
+    CREATE TABLE IF NOT EXISTS measurements(
+        time TIMESTAMPTZ DEFAULT now(),
+        topic TEXT,
+        value DOUBLE PRECISION
+    );
+""")
+DB.commit()
 
+# 3) Inserción de prueba inicial
 cur.execute("""
-INSERT INTO measurements(topic,value)
-VALUES ('sensors/temperature', 0.0);
-"""); DB.commit()
+    INSERT INTO measurements(topic, value)
+    VALUES ('sensors/temperature', 0.0);
+""")
+DB.commit()
 
-def on_msg(c,u,m):
-	val = float(m.payload.decode())
-	cur.execute("INSERT INTO measurements(topic,value) VALUES (%s,%s)",
-	(m.topic,val)); DB.commit()
-	print("OK:", m.topic, val)
-	client = mqtt.Client()
-	client.tls_set(ca_certs="/certs/ca.crt")
-	client.on_message = on_msg
-	client.connect(
-      os.getenv("MQTT_BROKER"),
-      int(os.getenv("MQTT_PORT") or 5000),
-    )
-	client.subscribe(os.getenv("MQTT_TOPIC"))
-	client.loop_forever()
+# 4) Callback para manejar mensajes MQTT
+def on_message(client, userdata, msg):
+    try:
+        val = float(msg.payload.decode())
+        cur.execute(
+            "INSERT INTO measurements(topic, value) VALUES (%s, %s)",
+            (msg.topic, val)
+        )
+        DB.commit()
+        print("OK:", msg.topic, val)
+    except Exception as e:
+        print("Error al procesar mensaje:", e)
+
+# 5) Configurar y arrancar cliente MQTT
+client = mqtt.Client()
+client.tls_set(ca_certs="/certs/ca.crt")
+client.on_message = on_message
+
+broker = os.getenv("MQTT_BROKER")
+port   = int(os.getenv("MQTT_PORT", 5000))
+topic  = os.getenv("MQTT_TOPIC")
+
+client.connect(broker, port)
+client.subscribe(topic)
+
+# 6) Bucle principal que mantiene el contenedor vivo
+client.loop_forever()
