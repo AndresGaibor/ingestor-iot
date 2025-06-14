@@ -75,7 +75,7 @@ docker compose up -d --build
 1. [Descargar e instalar cloudflared](https://github.com/cloudflare/cloudflared/releases)
 2. Conectarse al servicio
 ```bash
-	cloudflared access tcp --hostname (subdominio).dominio.com --url localhost:8833
+cloudflared access tcp --hostname (subdominio).dominio.com --url localhost:8833
 ```
 
 De esta forma podremos lanzar peticiones tcp a **localhost:8833**
