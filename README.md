@@ -63,7 +63,7 @@ docker run --rm -it \
 
 2. Crea (o edita) un archivo `docker-compose.yml` en la raíz:
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 ## Usar el servicio MQTT o TIMESCALE desde una maquina remota
