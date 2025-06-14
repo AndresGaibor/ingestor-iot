@@ -61,17 +61,22 @@ docker run --rm -it \
 	- data/grafana
 	- certs/ca.crt
 
+```bash
+sudo chown -R 472:472 ./data/grafana
+sudo chown -R 472:472 ./data/timescale
+```
+
 2. Crea (o edita) un archivo `docker-compose.yml` en la raíz:
 ```bash
 docker compose up -d --build
 ```
 
 ## Usar el servicio MQTT o TIMESCALE desde una maquina remota
-	1. [Descargar e instalar cloudflared](https://github.com/cloudflare/cloudflared/releases)
-	2. Conectarse al servicio
-	```bash
-		cloudflared access tcp --hostname (subdominio).dominio.com --url localhost:8833
-	```
+1. [Descargar e instalar cloudflared](https://github.com/cloudflare/cloudflared/releases)
+2. Conectarse al servicio
+```bash
+	cloudflared access tcp --hostname (subdominio).dominio.com --url localhost:8833
+```
 
 De esta forma podremos lanzar peticiones tcp a **localhost:8833**
 
