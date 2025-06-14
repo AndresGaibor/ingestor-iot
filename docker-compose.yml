@@ -1,4 +1,17 @@
 services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"    # puerto MQTT “sin TLS”
+      - "9001:9001"    # websocket opcional
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - backend
   ingestor-iot:
     container_name: ingestor-iot
     build:
