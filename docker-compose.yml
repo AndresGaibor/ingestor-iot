@@ -26,6 +26,7 @@ services:
     networks:
       - backend
     depends_on:
+      mqtt-broker: {}
       db:
         condition: service_healthy
   # Tu servicio de Grafana, con variables para conectarse a la BD
