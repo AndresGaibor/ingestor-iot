@@ -4,13 +4,23 @@ from dotenv import load_dotenv
 load_dotenv()  # carga variables desde .env
 
 import json, ssl, psycopg2, paho.mqtt.client as mqtt
-DB = psycopg2.connect(
-    host=os.getenv("DB_HOST"),
-    dbname=os.getenv("DB_NAME"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASS")
-)
+params = {
+    "host": os.getenv("DB_HOST", "db"),
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASS"),
+}
+
+while True:
+    try:
+        DB = psycopg2.connect(**params)
+        break
+    except psycopg2.OperationalError:
+        print("→ DB no lista. Reintentando en 2s...")
+        time.sleep(2)
+
 cur = DB.cursor()
+
 cur.execute("""CREATE EXTENSION IF NOT EXISTS timescaledb;""")
 cur.execute("""
 CREATE TABLE IF NOT EXISTS measurements(
