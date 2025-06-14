@@ -5,7 +5,7 @@ load_dotenv()  # carga variables desde .env
 
 import json, ssl, psycopg2, paho.mqtt.client as mqtt
 DB = psycopg2.connect(
-    host=os.getenv("DB_HOST"),
+    host="db",
     dbname=os.getenv("DB_NAME"),
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASS")
@@ -29,7 +29,7 @@ def on_msg(c,u,m):
 	(m.topic,val)); DB.commit()
 	print("OK:", m.topic, val)
 	client = mqtt.Client()
-	client.tls_set(ca_certs=os.getenv("CA_CERT_PATH"))
+	client.tls_set(ca_certs="/certs/ca.crt")
 	client.on_message = on_msg
 	client.connect(
       os.getenv("MQTT_BROKER"),

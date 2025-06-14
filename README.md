@@ -10,14 +10,13 @@ Este proyecto levanta un servicio Python que consume mensajes MQTT y los guarda 
 - VS Code + [Remote – Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)  
 - Un archivo `.env` en la raíz con tus variables de entorno:
   ```dotenv
-  DB_HOST=...
-  DB_NAME=...
-  DB_USER=...
-  DB_PASS=...
+  DB_HOST=localhost
+  DB_NAME=iotdb
+  DB_USER=iotuser
+  DB_PASS=iotpass
   MQTT_BROKER=broker
   MQTT_PORT=8883
   MQTT_TOPIC=sensors/+/temperature
-  CA_CERT_PATH=/certs/ca.crt
   ```
   **Nota**: El fichero `certs/ca.crt` debe contener el certificado de la CA que firma tu broker MQTT. No se incluye en el repositorio; descárgalo de tu proveedor o administrador y colócalo en la carpeta `certs/` en la raíz del proyecto.
 
@@ -57,23 +56,15 @@ docker run --rm -it \
 
 ## Usar con Docker Compose
 
-1. Crea (o edita) un archivo `docker-compose.yml` en la raíz:
+1. Crear las carpetas donde se guardaran los volumenes de los contenedores
+	- data/timescale
+	- data/grafana
+	- certs/ca.crt
 
-   ```yaml
-   version: '3.8'
-   services:
-     ingestor-iot:
-       build:
-         context: .
-         dockerfile: .devcontainer/Dockerfile
-       image: ingestor-iot:latest
-       env_file:
-         - .env
-       # Montamos el certificado desde fuera
-       volumes:
-         - ./certs:/certs:ro
-       ports:
-         - "5000:5000"
+2. Crea (o edita) un archivo `docker-compose.yml` en la raíz:
+```bash
+docker compose up -d
+```
 
 ## Limpieza
 

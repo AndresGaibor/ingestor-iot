@@ -1,0 +1,51 @@
+services:
+  ingestor-iot:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    image: ingestor-iot:latest
+    env_file:
+      - .env
+    # Montamos el certificado desde fuera
+    volumes:
+      - ./certs:/certs:ro
+    ports:
+      - "5000:5000"
+    networks:
+      - backend
+    depends_on:
+      - db
+  # Tu servicio de Grafana, con variables para conectarse a la BD
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    networks:
+      - backend
+    depends_on:
+      - db
+
+  # Tu servicio de Base de Datos
+  db:
+    image: timescale/timescaledb-ha:pg17
+    container_name: timescaledb
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=iotuser
+      - POSTGRES_PASSWORD=iotpass
+      - POSTGRES_DB=iotdb
+    volumes:
+      - ./data/timescale:/var/lib/postgresql/data
+    networks:
+      - backend
+
+# Definición de la red que usan los contenedores para comunicarse
+networks:
+  backend:
+    driver: bridge
