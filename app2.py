@@ -5,7 +5,7 @@ load_dotenv()  # carga variables desde .env
 
 import json, ssl, psycopg2, paho.mqtt.client as mqtt
 DB = psycopg2.connect(
-    host="db",
+    host=os.getenv("DB_HOST"),
     dbname=os.getenv("DB_NAME"),
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASS")

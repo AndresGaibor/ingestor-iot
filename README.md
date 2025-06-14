@@ -66,10 +66,14 @@ docker run --rm -it \
 docker compose up -d
 ```
 
-## Limpieza
+## Usar el servicio MQTT o TIMESCALE desde una maquina remota
+	1. [Descargar e instalar cloudflared](https://github.com/cloudflare/cloudflared/releases)
+	2. Conectarse al servicio
+	```bash
+		cloudflared access tcp --hostname (subdominio).dominio.com --url localhost:8833
+	```
 
-Para eliminar imágenes y contenedores huérfanos:
+De esta forma podremos lanzar peticiones tcp a **localhost:8833**
 
-```fish
-docker system prune --volumes
-```
+Para mas inforformacion de cloudflared, revistar esta guia: [Como usar cloudflared para exponer puertos](https://smoggy-stallion-237.notion.site/conectar-SQL-Server-con-VSC-12c09af24d13437da5b5159c51626cdd)
+
